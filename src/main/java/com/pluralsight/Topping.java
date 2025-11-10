@@ -8,6 +8,9 @@ public abstract class Topping {
         this.name = name;
         this.isExtra = isExtra;
     }
+    public String getName() {
+        return name;
+    }
 }
 
 
