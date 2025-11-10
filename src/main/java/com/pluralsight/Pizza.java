@@ -7,3 +7,11 @@ public class Pizza extends MenuItem {
     private CrustType crust;
     private boolean stuffedCrust;
     private List<Topping> toppings = new ArrayList<>();
+
+    public Pizza(PizzaSize size, CrustType crust, boolean stuffedCrust) {
+        super("Pizza");
+        this.size = size;
+        this.crust = crust;
+        this.stuffedCrust = stuffedCrust;
+    }
+
