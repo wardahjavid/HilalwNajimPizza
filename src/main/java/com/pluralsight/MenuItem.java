@@ -8,6 +8,9 @@ public abstract class MenuItem {
     }
 
     public abstract double getPrice();
+    public String getCategory() { return name; }
+    public String getLabel() { return name; }
+    @Override
     public abstract String toString();
 }
 
