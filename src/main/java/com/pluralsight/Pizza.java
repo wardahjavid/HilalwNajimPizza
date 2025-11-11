@@ -14,4 +14,7 @@ public class Pizza extends MenuItem {
         this.crust = crust;
         this.stuffedCrust = stuffedCrust;
     }
+    public void addTopping(Topping topping) {
+        toppings.add(topping);
+    }
 
