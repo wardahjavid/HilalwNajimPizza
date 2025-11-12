@@ -48,4 +48,9 @@ public class Pizza extends MenuItem {
     public String toString() {
         return getLabel() + " | " + toppings + " | $" + String.format("%.2f", getPrice());
     }
+
+    @Override
+    public double calculatePrice() {
+        return 0;
+    }
 }

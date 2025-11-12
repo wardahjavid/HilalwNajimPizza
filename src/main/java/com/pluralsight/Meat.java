@@ -2,7 +2,8 @@ package com.pluralsight;
 
 public class Meat extends Topping {
     private static final double BASE_PERSONAL = 1.00;
-    public Meat(String name, boolean isExtra) { super(name, isExtra); }
+    public Meat(String name, boolean isExtra, double v) { super(name, isExtra); }
+
 
     @Override
     public double getPrice(PizzaSize size) {

@@ -24,4 +24,9 @@ public class Drink extends MenuItem {
 
     @Override public String getLabel() { return size + " " + flavor; }
     @Override public String toString() { return getLabel() + " - $" + String.format("%.2f", getPrice()); }
+
+    @Override
+    public double calculatePrice() {
+        return 0;
+    }
 }

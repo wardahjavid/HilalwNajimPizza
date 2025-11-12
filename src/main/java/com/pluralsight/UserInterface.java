@@ -1,12 +1,16 @@
 package com.pluralsight;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Scanner;
 import java.util.function.Predicate;
 
 public class UserInterface {
-    // ANSI colors
+    // ───────────────────────────────
+    // 🎨 ANSI Colors
+    // ───────────────────────────────
     private static final String RESET  = "\u001B[0m";
     private static final String YELLOW = "\u001B[33m";
     private static final String CYAN   = "\u001B[36m";
@@ -17,12 +21,12 @@ public class UserInterface {
     private final Scanner scanner = new Scanner(System.in);
     private Order order = new Order();
     private final ReceiptFileManager receiptManager = new ReceiptFileManager();
-
+    
     public void run() {
         boolean running = true;
         while (running) {
             System.out.println(YELLOW + "\n╔══════════════════════════════════════╗");
-            System.out.println("║           HalilwNajimPizza  PIZZA-LICIOUS          ║");
+            System.out.println("║          PIZZA-LICIOUS POS SYSTEM         ║");
             System.out.println("╚══════════════════════════════════════╝" + RESET);
             System.out.println(CYAN + "1) New Order");
             System.out.println("2) View / Filter / Sort Current Order");
@@ -43,25 +47,31 @@ public class UserInterface {
             }
         }
     }
+
+    private void viewOrderMenu() {
+    }
+
     private void startOrder() {
         order = new Order();
         boolean ordering = true;
 
         while (ordering) {
             System.out.println(YELLOW + "\n──────────── ORDER MENU ────────────" + RESET);
-            System.out.println(CYAN + "1) Add Pizza");
-            System.out.println("2) Add Drink");
-            System.out.println("3) Add Garlic Knots");
-            System.out.println("4) Checkout");
+            System.out.println(CYAN + "1) Add Custom Pizza");
+            System.out.println("2) Add Signature Pizza");
+            System.out.println("3) Add Drink");
+            System.out.println("4) Add Garlic Knots");
+            System.out.println("5) Checkout");
             System.out.println("0) Cancel Order" + RESET);
             System.out.print(WHITE + "Choice: " + RESET);
 
             int choice = safeInt();
             switch (choice) {
                 case 1 -> addPizza();
-                case 2 -> addDrink();
-                case 3 -> addGarlicKnots();
-                case 4 -> checkout();
+                case 2 -> addSignaturePizzaToOrder();
+                case 3 -> addDrink();
+                case 4 -> addGarlicKnots();
+                case 5 -> checkout();
                 case 0 -> {
                     ordering = false;
                     System.out.println(RED + "Order cancelled." + RESET);
@@ -70,13 +80,16 @@ public class UserInterface {
             }
         }
     }
+    
     private void addPizza() {
+        // Step 1: Base pizza setup
         System.out.print(CYAN + "Size (1=Personal,2=Medium,3=Large): " + RESET);
         PizzaSize size = switch (safeInt()) {
             case 1 -> PizzaSize.PERSONAL;
             case 2 -> PizzaSize.MEDIUM;
             default -> PizzaSize.LARGE;
         };
+        scanner.nextLine(); // clear buffer
 
         System.out.print(CYAN + "Crust (thin/regular/thick/cauliflower): " + RESET);
         CrustType crust = CrustType.valueOf(scanner.next().trim().toUpperCase());
@@ -86,33 +99,75 @@ public class UserInterface {
 
         Pizza pizza = new Pizza(size, crust, stuffed);
 
+        // Step 2: Add toppings interactively
         System.out.print(CYAN + "Add toppings? y/n: " + RESET);
         while (scanner.next().trim().equalsIgnoreCase("y")) {
-            System.out.print(CYAN + "Type (regular/cheese/meat): " + RESET);
+
+            System.out.println(YELLOW + "\n AVAILABLE TOPPINGS GUIDE" + RESET);
+            System.out.println(WHITE + "Regular (included): " + CYAN +
+                    "Onions, Mushrooms, Bell Peppers, Olives, Tomatoes, Spinach, Basil, Pineapple, Anchovies" + RESET);
+            System.out.println(WHITE + "Cheese (premium $0.75): " + CYAN +
+                    "Mozzarella, Parmesan, Ricotta, Goat Cheese, Buffalo" + RESET);
+            System.out.println(WHITE + "Meat (premium $1.00): " + CYAN +
+                    "Pepperoni, Sausage, Ham, Bacon, Chicken, Meatball" + RESET);
+            System.out.println(WHITE + "Sauces (included): " + CYAN +
+                    "Marinara, Alfredo, Pesto, BBQ, Buffalo, Olive Oil" + RESET);
+            System.out.println(WHITE + "──────────────────────────────────────────────" + RESET);
+
+            System.out.print(CYAN + "Type (regular/cheese/meat/sauce): " + RESET);
             String type = scanner.next().trim().toLowerCase();
 
-            System.out.print(CYAN + "Name: " + RESET);
+            System.out.print(CYAN + "Topping name (e.g. Mozzarella, Pepperoni, Marinara): " + RESET);
             String name = scanner.next().trim();
 
             switch (type) {
                 case "cheese" -> {
-                    System.out.print(CYAN + "Extra? y/n: " + RESET);
+                    System.out.print(CYAN + "Extra cheese? y/n: " + RESET);
                     boolean ex = scanner.next().trim().equalsIgnoreCase("y");
-                    pizza.addTopping(new Cheese(name, ex));
+                    pizza.addTopping(new Cheese(name, ex, 0.75));
                 }
                 case "meat" -> {
-                    System.out.print(CYAN + "Extra? y/n: " + RESET);
+                    System.out.print(CYAN + "Extra meat? y/n: " + RESET);
                     boolean ex = scanner.next().trim().equalsIgnoreCase("y");
-                    pizza.addTopping(new Meat(name, ex));
+                    pizza.addTopping(new Meat(name, ex, 1.00));
                 }
-                default -> pizza.addTopping(new RegularTopping(name));
+                case "sauce" -> {
+                    pizza.addTopping(new RegularTopping(name, false)); // sauces are free
+                    System.out.println(GREEN + "Sauce added (no extra cost)." + RESET);
+                }
+                default -> pizza.addTopping(new RegularTopping(name, false));
             }
+
             System.out.print(CYAN + "Add another topping? y/n: " + RESET);
         }
 
         order.addItem(pizza);
-        System.out.println(GREEN + "Pizza added!" + RESET);
+        System.out.println(GREEN + "Custom pizza added to order!" + RESET);
     }
+
+ 
+    private void addSignaturePizzaToOrder() {
+        System.out.println("\n Signature Pizzas");
+        System.out.println("1) Margherita");
+        System.out.println("2) Veggie");
+        System.out.print("Choose a pizza (1-2): ");
+        String choice = scanner.next();
+
+        Pizza pizza = switch (choice) {
+            case "1" -> new MargheritaPizza();
+            case "2" -> new VeggiePizza();
+            default -> null;
+        };
+
+        if (pizza != null) {
+            System.out.println(pizza);
+            order.addItem(pizza);
+            System.out.println(GREEN + pizza.getClass().getSimpleName() + " added to order!" + RESET);
+        } else {
+            System.out.println(RED + " Invalid selection." + RESET);
+        }
+    }
+    
     private void addDrink() {
         System.out.print(CYAN + "Size (1=Small,2=Medium,3=Large): " + RESET);
         DrinkSize size = switch (safeInt()) {
@@ -123,21 +178,22 @@ public class UserInterface {
         System.out.print(CYAN + "Flavor: " + RESET);
         String flavor = scanner.next().trim();
         order.addItem(new Drink(size, flavor));
-        System.out.println(GREEN + "Drink added!" + RESET);
+        System.out.println(GREEN + "✅ Drink added!" + RESET);
     }
+    
     private void addGarlicKnots() {
         System.out.print(CYAN + "Quantity: " + RESET);
         int qty = safeInt();
         order.addItem(new GarlicKnot(qty));
         System.out.println(GREEN + "✅ Garlic Knots added!" + RESET);
     }
+
     private void checkout() {
         if (order.getItems().isEmpty()) {
-            System.out.println(RED + "⚠️  Cannot checkout an empty order! Add at least one item first." + RESET);
+            System.out.println(RED + " Cannot checkout an empty order!" + RESET);
             return;
         }
 
-        System.out.println(YELLOW + "\n══════════════ ORDER SUMMARY ══════════════" + RESET);
         AsciiTable.print(
                 "ORDER DETAILS",
                 new String[]{"Category", "Label", "Price"},
@@ -159,134 +215,37 @@ public class UserInterface {
         switch (opt) {
             case 1 -> printReceipt(filePath);
             case 2 -> emailReceipt(filePath);
-            case 3 -> { printReceipt(filePath); emailReceipt(filePath); }
+            case 3 -> {
+                printReceipt(filePath);
+                emailReceipt(filePath);
+            }
             default -> printReceipt(filePath);
         }
 
         System.out.println(GREEN + "\n Checkout complete! Thank you for choosing PIZZA-licious." + RESET);
     }
+
     private void printReceipt(String filePath) {
-        java.time.LocalDateTime now = java.time.LocalDateTime.now();
-        String readableTime = now.format(
-                java.time.format.DateTimeFormatter.ofPattern("EEEE, MMMM dd, yyyy 'at' hh:mm:ss a")
-        );
-        String fileTime = now.format(
-                java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss")
-        );
-
+        LocalDateTime now = LocalDateTime.now();
+        String readableTime = now.format(DateTimeFormatter.ofPattern("EEEE, MMMM dd, yyyy 'at' hh:mm:ss a"));
         System.out.println(YELLOW + "\n Printing receipt..." + RESET);
-        System.out.println(WHITE + "──────────────────────────────────────────────" + RESET);
-        System.out.println(CYAN + "Receipt File:" + RESET + " " + filePath);
-        System.out.println(CYAN + "File Timestamp:" + RESET + " " + fileTime);
-        System.out.println(CYAN + "Printed On:" + RESET + " " + readableTime);
-        System.out.println(WHITE + "──────────────────────────────────────────────" + RESET);
-        System.out.println(GREEN + " Order printed successfully!" + RESET);
+        System.out.println(WHITE + "File: " + filePath);
+        System.out.println(CYAN + "Printed On: " + readableTime + RESET);
     }
-    private void emailReceipt(String filePath) {
-        java.time.LocalDateTime now = java.time.LocalDateTime.now();
-        String readableTime = now.format(
-                java.time.format.DateTimeFormatter.ofPattern("EEEE, MMMM dd, yyyy 'at' hh:mm:ss a")
-        );
 
-        System.out.println(YELLOW + "\n📧 Sending receipt via email..." + RESET);
+
+    private void emailReceipt(String filePath) {
         System.out.print(CYAN + "Enter customer email address: " + RESET);
         String email = scanner.next().trim();
-
-        System.out.println(WHITE + "──────────────────────────────────────────────" + RESET);
-        System.out.println(WHITE + "Connecting to mail server..." + RESET);
-        System.out.println("Sending receipt file: " + CYAN + filePath + RESET);
-        System.out.println("Timestamp: " + readableTime);
-        System.out.println(GREEN + "✅ Receipt emailed successfully to " + email + RESET);
-        System.out.println(WHITE + "──────────────────────────────────────────────" + RESET);
+        System.out.println(GREEN + " Receipt emailed successfully to " + email + RESET);
     }
-    private void viewOrderMenu() {
-        Predicate<MenuItem> filter = MenuFilters.any();
-        Comparator<MenuItem> sorter = MenuSorters.byLabel();
-        boolean loop = true;
 
-        while (loop) {
-            System.out.println(YELLOW + "\n────────── VIEW / FILTER / SORT ──────────" + RESET);
-            System.out.println(CYAN + "1) Filter: Category");
-            System.out.println("2) Filter: Price Range");
-            System.out.println("3) Filter: Pizza Size/Crust/Topping");
-            System.out.println("4) Filter: Drink Size/Flavor");
-            System.out.println("5) Filter: Garlic Knot Qty");
-            System.out.println("6) Sort: Price/Category/Label");
-            System.out.println("7) Show Table");
-            System.out.println("0) Back" + RESET);
-            System.out.print(WHITE + "Choice: " + RESET);
-
-            int c = safeInt();
-            switch (c) {
-                case 1 -> {
-                    System.out.print(CYAN + "Enter category: " + RESET);
-                    filter = filter.and(MenuFilters.category(scanner.next().trim()));
-                }
-                case 2 -> {
-                    System.out.print(CYAN + "Min price: " + RESET); double min = safeDouble();
-                    System.out.print(CYAN + "Max price: " + RESET); double max = safeDouble();
-                    filter = filter.and(MenuFilters.priceBetween(min, max));
-                }
-                case 3 -> {
-                    System.out.print(CYAN + "Size (1=Personal,2=Medium,3=Large,0=skip): " + RESET);
-                    int s = safeInt();
-                    if (s != 0)
-                        filter = filter.and(MenuFilters.pizzaSize(
-                                s==1? PizzaSize.PERSONAL : s==2? PizzaSize.MEDIUM : PizzaSize.LARGE));
-
-                    System.out.print(CYAN + "Crust (thin/regular/thick/cauliflower/skip): " + RESET);
-                    String crust = scanner.next().trim();
-                    if (!crust.equalsIgnoreCase("skip"))
-                        filter = filter.and(MenuFilters.crust(CrustType.valueOf(crust.toUpperCase())));
-
-                    System.out.print(CYAN + "Has topping name (or skip): " + RESET);
-                    String tn = scanner.next().trim();
-                    if (!tn.equalsIgnoreCase("skip"))
-                        filter = filter.and(MenuFilters.hasToppingNamed(tn));
-                }
-                case 4 -> {
-                    System.out.print(CYAN + "Drink size (1=Small,2=Medium,3=Large,0=skip): " + RESET);
-                    int ds = safeInt();
-                    if (ds != 0)
-                        filter = filter.and(MenuFilters.drinkSize(
-                                ds==1? DrinkSize.SMALL : ds==2? DrinkSize.MEDIUM : DrinkSize.LARGE));
-
-                    System.out.print(CYAN + "Flavor contains (or skip): " + RESET);
-                    String flv = scanner.next().trim();
-                    if (!flv.equalsIgnoreCase("skip"))
-                        filter = filter.and(MenuFilters.flavorContains(flv));
-                }
-                case 5 -> {
-                    System.out.print(CYAN + "Min knot orders: " + RESET);
-                    int q = safeInt();
-                    filter = filter.and(MenuFilters.minKnots(q));
-                }
-                case 6 -> {
-                    System.out.println(CYAN + "1=Price Asc, 2=Price Desc, 3=Category, 4=Label" + RESET);
-                    sorter = switch (safeInt()) {
-                        case 1 -> MenuSorters.byPriceAsc();
-                        case 2 -> MenuSorters.byPriceDesc();
-                        case 3 -> MenuSorters.byCategory();
-                        case 4 -> MenuSorters.byLabel();
-                        default -> sorter;
-                    };
-                }
-                case 7 -> AsciiTable.print(
-                        "CURRENT ORDER (Filtered/Sorted)",
-                        new String[]{"Category", "Label", "Price"},
-                        order.toRows(order.query(filter, sorter))
-                );
-                case 0 -> loop = false;
-                default -> System.out.println(RED + "Invalid." + RESET);
-            }
-        }
-    }
     private void managerMenu() {
         boolean quit = false;
         ReceiptFileManager rfm = new ReceiptFileManager();
 
         while (!quit) {
-            System.out.println(YELLOW + "\n─────────────── MANAGER / ADMIN MENU ───────────────" + RESET);
+            System.out.println(YELLOW + "\n────────────── MANAGER MENU ──────────────" + RESET);
             System.out.println(CYAN + "1) View Daily Sales Summary");
             System.out.println("2) View Today's Summary (auto)");
             System.out.println("0) Return to Main Menu" + RESET);
@@ -301,8 +260,7 @@ public class UserInterface {
                     rfm.showDailySummary(dateInput);
                 }
                 case 2 -> {
-                    String today = java.time.LocalDate.now()
-                            .format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd"));
+                    String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
                     System.out.println(CYAN + "\n Automatically showing today's report: " + today + RESET);
                     rfm.showDailySummary(today);
                 }
@@ -312,7 +270,6 @@ public class UserInterface {
         }
     }
 
-
     private int safeInt() {
         while (!scanner.hasNextInt()) {
             scanner.next();
@@ -320,6 +277,7 @@ public class UserInterface {
         }
         return scanner.nextInt();
     }
+
     private double safeDouble() {
         while (!scanner.hasNextDouble()) {
             scanner.next();
@@ -328,6 +286,3 @@ public class UserInterface {
         return scanner.nextDouble();
     }
 }
-
-
-

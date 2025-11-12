@@ -11,5 +11,7 @@ public abstract class MenuItem {
     public abstract double getPrice();
     @Override
     public abstract String toString();
+
+    public abstract double calculatePrice();
 }
 

@@ -3,10 +3,16 @@ package com.pluralsight;
 import java.io.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 public class ReceiptFileManager {
     private final String directory = "receipts/";
 
+    /**
+     * Saves the current order to a timestamped .txt file,
+     * prints a formatted ASCII table of order items,
+     * and appends the summary to a daily log file.
+     */
     public String saveOrder(Order order) {
         try {
             File folder = new File(directory);
@@ -19,23 +25,35 @@ public class ReceiptFileManager {
             String fileName = "receipt-" + fileTimestamp + ".txt";
             String filePath = directory + fileName;
 
+            // ─────────────── Write receipt header ───────────────
             try (BufferedWriter bw = new BufferedWriter(new FileWriter(filePath))) {
                 bw.write("==============================================\n");
-                bw.write(" PIZZA-licious Point-of-Sale System\n");
+                bw.write(" 🍕 PIZZA-licious Point-of-Sale System\n");
                 bw.write(" Date & Time: " + readableTimestamp + "\n");
                 bw.write(" Receipt ID:  " + fileTimestamp + "\n");
                 bw.write("==============================================\n\n");
+
+                bw.write("CUSTOMER ORDER DETAILS\n");
+                bw.write("----------------------------------------------\n");
                 bw.write(order.toString());
-                bw.write("\n==============================================\n");
+                bw.write("\n\n----------------------------------------------\n");
                 bw.write("Thank you for dining with PIZZA-licious!\n");
                 bw.write("==============================================\n");
             }
 
-            System.out.println("\n" + "\u001B[33m" + "🗂️  Receipt saved successfully!" + "\u001B[0m");
-            System.out.println(" File: " + filePath);
-            System.out.println(" Saved On: " + readableTimestamp);
+            // ─────────────── Export ASCII Table to same receipt ───────────────
+            String[] headers = {"Category", "Label", "Price"};
+            List<String[]> rows = order.toRows(order.getItems());
+            AsciiTable.print("ORDER DETAILS", headers, rows, filePath);  // Writes table inside same file
 
-            appendToDailyLog(order); // BONUS
+            // ─────────────── Console confirmation ───────────────
+            System.out.println("\n\u001B[33m🗂️  Receipt saved successfully!\u001B[0m");
+            System.out.println(" 📁 File: " + filePath);
+            System.out.println(" 🕒 Saved On: " + readableTimestamp);
+
+            // ─────────────── Append to daily log ───────────────
+            appendToDailyLog(order);
+
             return filePath;
 
         } catch (IOException e) {
@@ -44,7 +62,7 @@ public class ReceiptFileManager {
         }
     }
 
-    // BONUS: Append one-line summary to daily log
+    // ─────────────── DAILY LOG APPEND ───────────────
     public void appendToDailyLog(Order order) {
         try {
             LocalDateTime now = LocalDateTime.now();
@@ -68,6 +86,7 @@ public class ReceiptFileManager {
         }
     }
 
+    // ─────────────── MANAGER SUMMARY ───────────────
     public void showDailySummary(String dateInput) {
         String logPath = directory + "receipt-log-" + dateInput + ".txt";
         double totalSales = 0.0;
@@ -83,18 +102,23 @@ public class ReceiptFileManager {
                         double value = Double.parseDouble(valueStr);
                         totalSales += value;
                         orderCount++;
-                    } catch (NumberFormatException ignored) {}
+                    } catch (NumberFormatException ignored) {
+                    }
                 }
             }
 
             if (orderCount > 0) {
                 double average = totalSales / orderCount;
-                System.out.println("\u001B[33m\n  Date: " + dateInput + "\u001B[0m");
-                System.out.println("\u001B[36m Orders: " + orderCount + "\u001B[0m");
-                System.out.println("\u001B[32mTotal Sales: $" + String.format("%.2f", totalSales) + "\u001B[0m");
-                System.out.println("\u001B[35m Average Order: $" + String.format("%.2f", average) + "\u001B[0m\n");
+
+                // Use AsciiTable for clean summary display
+                String[] headers = {"Date", "Orders", "Total Sales", "Average Order"};
+                List<String[]> rows = List.of();
+
+                AsciiTable.print("DAILY SALES SUMMARY", headers, rows,
+                        directory + "summary-" + dateInput + ".txt");
+
             } else {
-                System.out.println("\u001B[31m No sales recorded for this date.\u001B[0m");
+                System.out.println("\u001B[31m⚠  No sales recorded for this date.\u001B[0m");
             }
 
         } catch (FileNotFoundException e) {
