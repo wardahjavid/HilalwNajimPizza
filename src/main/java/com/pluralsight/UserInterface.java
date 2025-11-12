@@ -199,6 +199,88 @@ public class UserInterface {
         System.out.println(GREEN + "✅ Receipt emailed successfully to " + email + RESET);
         System.out.println(WHITE + "──────────────────────────────────────────────" + RESET);
     }
+    private void viewOrderMenu() {
+        Predicate<MenuItem> filter = MenuFilters.any();
+        Comparator<MenuItem> sorter = MenuSorters.byLabel();
+        boolean loop = true;
+
+        while (loop) {
+            System.out.println(YELLOW + "\n────────── VIEW / FILTER / SORT ──────────" + RESET);
+            System.out.println(CYAN + "1) Filter: Category");
+            System.out.println("2) Filter: Price Range");
+            System.out.println("3) Filter: Pizza Size/Crust/Topping");
+            System.out.println("4) Filter: Drink Size/Flavor");
+            System.out.println("5) Filter: Garlic Knot Qty");
+            System.out.println("6) Sort: Price/Category/Label");
+            System.out.println("7) Show Table");
+            System.out.println("0) Back" + RESET);
+            System.out.print(WHITE + "Choice: " + RESET);
+
+            int c = safeInt();
+            switch (c) {
+                case 1 -> {
+                    System.out.print(CYAN + "Enter category: " + RESET);
+                    filter = filter.and(MenuFilters.category(scanner.next().trim()));
+                }
+                case 2 -> {
+                    System.out.print(CYAN + "Min price: " + RESET); double min = safeDouble();
+                    System.out.print(CYAN + "Max price: " + RESET); double max = safeDouble();
+                    filter = filter.and(MenuFilters.priceBetween(min, max));
+                }
+                case 3 -> {
+                    System.out.print(CYAN + "Size (1=Personal,2=Medium,3=Large,0=skip): " + RESET);
+                    int s = safeInt();
+                    if (s != 0)
+                        filter = filter.and(MenuFilters.pizzaSize(
+                                s==1? PizzaSize.PERSONAL : s==2? PizzaSize.MEDIUM : PizzaSize.LARGE));
+
+                    System.out.print(CYAN + "Crust (thin/regular/thick/cauliflower/skip): " + RESET);
+                    String crust = scanner.next().trim();
+                    if (!crust.equalsIgnoreCase("skip"))
+                        filter = filter.and(MenuFilters.crust(CrustType.valueOf(crust.toUpperCase())));
+
+                    System.out.print(CYAN + "Has topping name (or skip): " + RESET);
+                    String tn = scanner.next().trim();
+                    if (!tn.equalsIgnoreCase("skip"))
+                        filter = filter.and(MenuFilters.hasToppingNamed(tn));
+                }
+                case 4 -> {
+                    System.out.print(CYAN + "Drink size (1=Small,2=Medium,3=Large,0=skip): " + RESET);
+                    int ds = safeInt();
+                    if (ds != 0)
+                        filter = filter.and(MenuFilters.drinkSize(
+                                ds==1? DrinkSize.SMALL : ds==2? DrinkSize.MEDIUM : DrinkSize.LARGE));
+
+                    System.out.print(CYAN + "Flavor contains (or skip): " + RESET);
+                    String flv = scanner.next().trim();
+                    if (!flv.equalsIgnoreCase("skip"))
+                        filter = filter.and(MenuFilters.flavorContains(flv));
+                }
+                case 5 -> {
+                    System.out.print(CYAN + "Min knot orders: " + RESET);
+                    int q = safeInt();
+                    filter = filter.and(MenuFilters.minKnots(q));
+                }
+                case 6 -> {
+                    System.out.println(CYAN + "1=Price Asc, 2=Price Desc, 3=Category, 4=Label" + RESET);
+                    sorter = switch (safeInt()) {
+                        case 1 -> MenuSorters.byPriceAsc();
+                        case 2 -> MenuSorters.byPriceDesc();
+                        case 3 -> MenuSorters.byCategory();
+                        case 4 -> MenuSorters.byLabel();
+                        default -> sorter;
+                    };
+                }
+                case 7 -> AsciiTable.print(
+                        "CURRENT ORDER (Filtered/Sorted)",
+                        new String[]{"Category", "Label", "Price"},
+                        order.toRows(order.query(filter, sorter))
+                );
+                case 0 -> loop = false;
+                default -> System.out.println(RED + "Invalid." + RESET);
+            }
+        }
+    }
 
 
 
