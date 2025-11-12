@@ -43,4 +43,32 @@ public class UserInterface {
             }
         }
     }
+    private void startOrder() {
+        order = new Order();
+        boolean ordering = true;
+
+        while (ordering) {
+            System.out.println(YELLOW + "\n──────────── ORDER MENU ────────────" + RESET);
+            System.out.println(CYAN + "1) Add Pizza");
+            System.out.println("2) Add Drink");
+            System.out.println("3) Add Garlic Knots");
+            System.out.println("4) Checkout");
+            System.out.println("0) Cancel Order" + RESET);
+            System.out.print(WHITE + "Choice: " + RESET);
+
+            int choice = safeInt();
+            switch (choice) {
+                case 1 -> addPizza();
+                case 2 -> addDrink();
+                case 3 -> addGarlicKnots();
+                case 4 -> checkout();
+                case 0 -> {
+                    ordering = false;
+                    System.out.println(RED + "Order cancelled." + RESET);
+                }
+                default -> System.out.println(RED + "Invalid option." + RESET);
+            }
+        }
+    }
+
 
