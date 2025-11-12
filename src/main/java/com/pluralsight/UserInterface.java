@@ -281,6 +281,53 @@ public class UserInterface {
             }
         }
     }
+    private void managerMenu() {
+        boolean quit = false;
+        ReceiptFileManager rfm = new ReceiptFileManager();
+
+        while (!quit) {
+            System.out.println(YELLOW + "\n─────────────── MANAGER / ADMIN MENU ───────────────" + RESET);
+            System.out.println(CYAN + "1) View Daily Sales Summary");
+            System.out.println("2) View Today's Summary (auto)");
+            System.out.println("0) Return to Main Menu" + RESET);
+            System.out.print(WHITE + "Enter option: " + RESET);
+
+            int choice = safeInt();
+
+            switch (choice) {
+                case 1 -> {
+                    System.out.print(CYAN + "Enter date (YYYYMMDD): " + RESET);
+                    String dateInput = scanner.next().trim();
+                    rfm.showDailySummary(dateInput);
+                }
+                case 2 -> {
+                    String today = java.time.LocalDate.now()
+                            .format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd"));
+                    System.out.println(CYAN + "\n Automatically showing today's report: " + today + RESET);
+                    rfm.showDailySummary(today);
+                }
+                case 0 -> quit = true;
+                default -> System.out.println(RED + "Invalid choice. Try again." + RESET);
+            }
+        }
+    }
+
+
+    private int safeInt() {
+        while (!scanner.hasNextInt()) {
+            scanner.next();
+            System.out.print(RED + "Enter a valid number: " + RESET);
+        }
+        return scanner.nextInt();
+    }
+    private double safeDouble() {
+        while (!scanner.hasNextDouble()) {
+            scanner.next();
+            System.out.print(RED + "Enter a valid number: " + RESET);
+        }
+        return scanner.nextDouble();
+    }
+}
 
 
 
