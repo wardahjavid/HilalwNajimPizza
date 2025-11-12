@@ -131,6 +131,40 @@ public class UserInterface {
         order.addItem(new GarlicKnot(qty));
         System.out.println(GREEN + "✅ Garlic Knots added!" + RESET);
     }
+    private void checkout() {
+        if (order.getItems().isEmpty()) {
+            System.out.println(RED + "⚠️  Cannot checkout an empty order! Add at least one item first." + RESET);
+            return;
+        }
+
+        System.out.println(YELLOW + "\n══════════════ ORDER SUMMARY ══════════════" + RESET);
+        AsciiTable.print(
+                "ORDER DETAILS",
+                new String[]{"Category", "Label", "Price"},
+                order.toRows(order.getItems())
+        );
+
+        double total = order.calculateTotal();
+        System.out.println(GREEN + "TOTAL: $" + String.format("%.2f", total) + RESET);
+
+        String filePath = receiptManager.saveOrder(order);
+
+        System.out.println(YELLOW + "\nChoose your receipt delivery option:" + RESET);
+        System.out.println(CYAN + "1) Print receipt");
+        System.out.println("2) Email receipt");
+        System.out.println("3) Both (print + email)" + RESET);
+        System.out.print(WHITE + "Enter choice: " + RESET);
+        int opt = safeInt();
+
+        switch (opt) {
+            case 1 -> printReceipt(filePath);
+            case 2 -> emailReceipt(filePath);
+            case 3 -> { printReceipt(filePath); emailReceipt(filePath); }
+            default -> printReceipt(filePath);
+        }
+
+        System.out.println(GREEN + "\n✅ Checkout complete! Thank you for choosing PIZZA-licious." + RESET);
+    }
 
 
 
