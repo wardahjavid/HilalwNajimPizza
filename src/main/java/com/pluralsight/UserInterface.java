@@ -123,7 +123,13 @@ public class UserInterface {
         System.out.print(CYAN + "Flavor: " + RESET);
         String flavor = scanner.next().trim();
         order.addItem(new Drink(size, flavor));
-        System.out.println(GREEN + "✅ Drink added!" + RESET);
+        System.out.println(GREEN + "Drink added!" + RESET);
+    }
+    private void addGarlicKnots() {
+        System.out.print(CYAN + "Quantity: " + RESET);
+        int qty = safeInt();
+        order.addItem(new GarlicKnot(qty));
+        System.out.println(GREEN + "✅ Garlic Knots added!" + RESET);
     }
 
 
