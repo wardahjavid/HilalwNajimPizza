@@ -163,7 +163,24 @@ public class UserInterface {
             default -> printReceipt(filePath);
         }
 
-        System.out.println(GREEN + "\n✅ Checkout complete! Thank you for choosing PIZZA-licious." + RESET);
+        System.out.println(GREEN + "\n Checkout complete! Thank you for choosing PIZZA-licious." + RESET);
+    }
+    private void printReceipt(String filePath) {
+        java.time.LocalDateTime now = java.time.LocalDateTime.now();
+        String readableTime = now.format(
+                java.time.format.DateTimeFormatter.ofPattern("EEEE, MMMM dd, yyyy 'at' hh:mm:ss a")
+        );
+        String fileTime = now.format(
+                java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss")
+        );
+
+        System.out.println(YELLOW + "\n Printing receipt..." + RESET);
+        System.out.println(WHITE + "──────────────────────────────────────────────" + RESET);
+        System.out.println(CYAN + "Receipt File:" + RESET + " " + filePath);
+        System.out.println(CYAN + "File Timestamp:" + RESET + " " + fileTime);
+        System.out.println(CYAN + "Printed On:" + RESET + " " + readableTime);
+        System.out.println(WHITE + "──────────────────────────────────────────────" + RESET);
+        System.out.println(GREEN + " Order printed successfully!" + RESET);
     }
 
 
