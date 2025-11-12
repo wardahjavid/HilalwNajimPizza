@@ -70,5 +70,49 @@ public class UserInterface {
             }
         }
     }
+    private void addPizza() {
+        System.out.print(CYAN + "Size (1=Personal,2=Medium,3=Large): " + RESET);
+        PizzaSize size = switch (safeInt()) {
+            case 1 -> PizzaSize.PERSONAL;
+            case 2 -> PizzaSize.MEDIUM;
+            default -> PizzaSize.LARGE;
+        };
+
+        System.out.print(CYAN + "Crust (thin/regular/thick/cauliflower): " + RESET);
+        CrustType crust = CrustType.valueOf(scanner.next().trim().toUpperCase());
+
+        System.out.print(CYAN + "Stuffed crust? (true/false): " + RESET);
+        boolean stuffed = scanner.nextBoolean();
+
+        Pizza pizza = new Pizza(size, crust, stuffed);
+
+        System.out.print(CYAN + "Add toppings? y/n: " + RESET);
+        while (scanner.next().trim().equalsIgnoreCase("y")) {
+            System.out.print(CYAN + "Type (regular/cheese/meat): " + RESET);
+            String type = scanner.next().trim().toLowerCase();
+
+            System.out.print(CYAN + "Name: " + RESET);
+            String name = scanner.next().trim();
+
+            switch (type) {
+                case "cheese" -> {
+                    System.out.print(CYAN + "Extra? y/n: " + RESET);
+                    boolean ex = scanner.next().trim().equalsIgnoreCase("y");
+                    pizza.addTopping(new Cheese(name, ex));
+                }
+                case "meat" -> {
+                    System.out.print(CYAN + "Extra? y/n: " + RESET);
+                    boolean ex = scanner.next().trim().equalsIgnoreCase("y");
+                    pizza.addTopping(new Meat(name, ex));
+                }
+                default -> pizza.addTopping(new RegularTopping(name));
+            }
+            System.out.print(CYAN + "Add another topping? y/n: " + RESET);
+        }
+
+        order.addItem(pizza);
+        System.out.println(GREEN + "✅ Pizza added!" + RESET);
+    }
+
 
 
