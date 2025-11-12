@@ -111,7 +111,19 @@ public class UserInterface {
         }
 
         order.addItem(pizza);
-        System.out.println(GREEN + "✅ Pizza added!" + RESET);
+        System.out.println(GREEN + "Pizza added!" + RESET);
+    }
+    private void addDrink() {
+        System.out.print(CYAN + "Size (1=Small,2=Medium,3=Large): " + RESET);
+        DrinkSize size = switch (safeInt()) {
+            case 1 -> DrinkSize.SMALL;
+            case 2 -> DrinkSize.MEDIUM;
+            default -> DrinkSize.LARGE;
+        };
+        System.out.print(CYAN + "Flavor: " + RESET);
+        String flavor = scanner.next().trim();
+        order.addItem(new Drink(size, flavor));
+        System.out.println(GREEN + "✅ Drink added!" + RESET);
     }
 
 
