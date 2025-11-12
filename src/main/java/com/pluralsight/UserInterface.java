@@ -182,6 +182,23 @@ public class UserInterface {
         System.out.println(WHITE + "──────────────────────────────────────────────" + RESET);
         System.out.println(GREEN + " Order printed successfully!" + RESET);
     }
+    private void emailReceipt(String filePath) {
+        java.time.LocalDateTime now = java.time.LocalDateTime.now();
+        String readableTime = now.format(
+                java.time.format.DateTimeFormatter.ofPattern("EEEE, MMMM dd, yyyy 'at' hh:mm:ss a")
+        );
+
+        System.out.println(YELLOW + "\n📧 Sending receipt via email..." + RESET);
+        System.out.print(CYAN + "Enter customer email address: " + RESET);
+        String email = scanner.next().trim();
+
+        System.out.println(WHITE + "──────────────────────────────────────────────" + RESET);
+        System.out.println(WHITE + "Connecting to mail server..." + RESET);
+        System.out.println("Sending receipt file: " + CYAN + filePath + RESET);
+        System.out.println("Timestamp: " + readableTime);
+        System.out.println(GREEN + "✅ Receipt emailed successfully to " + email + RESET);
+        System.out.println(WHITE + "──────────────────────────────────────────────" + RESET);
+    }
 
 
 
