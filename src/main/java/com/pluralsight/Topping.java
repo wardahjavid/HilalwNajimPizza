@@ -1,22 +1,20 @@
 package com.pluralsight;
 
 public abstract class Topping {
-    protected String name;
-    protected boolean isExtra;
+    protected final String name;
+    protected final boolean isExtra;
 
-    public Topping(String name, boolean isExtra) {
+    protected Topping(String name, boolean isExtra) {
         this.name = name;
         this.isExtra = isExtra;
     }
-    public String getName() {
-        return name;
-    }
+
+    public String getName() { return name; }
+    public boolean isExtra() { return isExtra; }
+
     public abstract double getPrice(PizzaSize size);
 
     @Override
-    public String toString() {
-        return name + (isExtra ? " (extra)" : "");
-    }
+    public String toString() { return name + (isExtra ? " (extra)" : ""); }
 }
-
 
