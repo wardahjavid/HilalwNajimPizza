@@ -8,7 +8,7 @@ import com.pluralsight.domain.topping.Topping;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class Pizza extends MenuItem {
+public class Pizza extends MenuItem {
 
     protected PizzaSize size;
     protected CrustType crust;
@@ -16,35 +16,52 @@ public abstract class Pizza extends MenuItem {
 
     protected final List<Topping> toppings = new ArrayList<>();
 
-    protected Pizza(PizzaSize size, CrustType crust, boolean stuffedCrust) {
+    public Pizza(PizzaSize size, CrustType crust, boolean stuffedCrust) {
         super("Pizza");
         this.size = size;
         this.crust = crust;
         this.stuffedCrust = stuffedCrust;
     }
 
-    public PizzaSize getSize() {
-        return size;
+    public PizzaSize getSize() { return size; }
+    public CrustType getCrust() { return crust; }
+    public boolean isStuffedCrust() { return stuffedCrust; }
+    public List<Topping> getToppings() { return toppings; }
+
+    public void addTopping(Topping t) { toppings.add(t); }
+
+    private double getBasePrice() {
+        return switch (size) {
+            case PERSONAL -> 8.50;
+            case MEDIUM   -> 12.00;
+            case LARGE    -> 16.50;
+        };
     }
 
-    public CrustType getCrust() {
-        return crust;
+    private double getStuffedCrustCost() {
+        return stuffedCrust ? 2.00 : 0.00;
     }
 
-    public boolean isStuffedCrust() {
-        return stuffedCrust;
-    }
+    @Override
+    public double getPrice() {
+        double base = getBasePrice();
 
-    public List<Topping> getToppings() {
-        return toppings;
-    }
+        double toppingTotal = toppings.stream()
+                .mapToDouble(t -> t.getPrice(size))
+                .sum();
 
-    public void addTopping(Topping t) {
-        toppings.add(t);
+        return base + toppingTotal + getStuffedCrustCost();
     }
 
     @Override
     public String getLabel() {
         return size + " " + crust + (stuffedCrust ? " (Stuffed)" : "");
+    }
+
+    @Override
+    public String toString() {
+        return "Pizza (" + getLabel() + ")\n" +
+                "Toppings: " + toppings.stream().map(Topping::getName).toList() + "\n" +
+                "Price: $" + String.format("%.2f", getPrice());
     }
 }
