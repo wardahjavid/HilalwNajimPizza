@@ -8,15 +8,12 @@ public abstract class MenuItem {
         this.category = category;
     }
 
-    /** e.g. "Pizza", "Drink", "Garlic Knots" */
     public String getCategory() {
         return category;
     }
 
-    /** e.g. "Large Thin Pizza", "Medium Cola", "12 Knots" */
     public abstract String getLabel();
 
-    /** price for this menu item */
     public abstract double getPrice();
 
     @Override
