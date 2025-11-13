@@ -16,12 +16,17 @@ public abstract class SignaturePizza extends Pizza {
     @Override
     public double getPrice() {
         double total = PriceConfig.signatureBasePrice(size);
-
-        if (stuffedCrust)
+        if (stuffedCrust) {
             total += PriceConfig.STUFFED_CRUST_UPCHARGE;
-
+        }
+        for (var topping : toppings) {
+            total += topping.getPrice(size);
+        }
         return total;
     }
+
+
+
 
     @Override
     public String toString() {

@@ -45,7 +45,8 @@ public class Order {
 
     public List<String[]> toRows(List<MenuItem> list) {
         List<String[]> rows = new ArrayList<>();
-        for (MenuItem m : list) {
+        for (int i = list.size() - 1; i >= 0; i--) {
+            MenuItem m = list.get(i);
             rows.add(new String[] {
                     m.getCategory(),
                     m.getLabel(),
@@ -54,6 +55,7 @@ public class Order {
         }
         return rows;
     }
+
 
     @Override
     public String toString() {
