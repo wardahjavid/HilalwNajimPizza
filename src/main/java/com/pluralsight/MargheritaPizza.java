@@ -1,9 +1,5 @@
 package com.pluralsight;
 
-/**
- * Signature Margherita Pizza (12" Regular Crust)
- * Includes Mozzarella, Tomatoes, Basil, Marinara, Olive Oil
- */
 public class MargheritaPizza extends SignaturPizza {
 
     public MargheritaPizza() {

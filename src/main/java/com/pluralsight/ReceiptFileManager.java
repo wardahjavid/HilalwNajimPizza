@@ -8,11 +8,6 @@ import java.util.List;
 public class ReceiptFileManager {
     private final String directory = "receipts/";
 
-    /**
-     * Saves the current order to a timestamped .txt file,
-     * prints a formatted ASCII table of order items,
-     * and appends the summary to a daily log file.
-     */
     public String saveOrder(Order order) {
         try {
             File folder = new File(directory);
@@ -110,7 +105,7 @@ public class ReceiptFileManager {
             if (orderCount > 0) {
                 double average = totalSales / orderCount;
 
-                // Use AsciiTable for clean summary display
+
                 String[] headers = {"Date", "Orders", "Total Sales", "Average Order"};
                 List<String[]> rows = List.of();
 

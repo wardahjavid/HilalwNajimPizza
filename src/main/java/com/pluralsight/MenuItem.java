@@ -1,17 +1,26 @@
-package com.pluralsight;
+package com.pluralsight.domain;
 
 public abstract class MenuItem {
-    protected String name;
 
-    protected MenuItem(String name) { this.name = name; }
+    private final String category;
 
-    public String getCategory() { return name; }
-    public String getLabel() { return name; }
+    protected MenuItem(String category) {
+        this.category = category;
+    }
 
+    /** e.g. "Pizza", "Drink", "Garlic Knots" */
+    public String getCategory() {
+        return category;
+    }
+
+    /** e.g. "Large Thin Pizza", "Medium Cola", "12 Knots" */
+    public abstract String getLabel();
+
+    /** price for this menu item */
     public abstract double getPrice();
+
     @Override
-    public abstract String toString();
-
-    public abstract double calculatePrice();
+    public String toString() {
+        return getLabel() + " - $" + String.format("%.2f", getPrice());
+    }
 }
-
