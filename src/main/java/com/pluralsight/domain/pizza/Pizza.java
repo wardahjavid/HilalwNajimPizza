@@ -42,6 +42,24 @@ public abstract class Pizza extends MenuItem {
     public void addTopping(Topping t) {
         toppings.add(t);
     }
+    @Override
+    public double getPrice() {
+
+        double base = switch (size) {
+            case PERSONAL -> 8.50;
+            case MEDIUM   -> 12.00;
+            case LARGE    -> 16.50;
+        };
+
+        double toppingTotal = toppings.stream()
+                .mapToDouble(t -> t.getPrice(size))
+                .sum();
+
+        double stuffedCost = stuffedCrust ? 2.00 : 0.00;
+
+        return base + toppingTotal + stuffedCost;
+    }
+
 
     @Override
     public String getLabel() {
