@@ -7,7 +7,7 @@ public class GarlicKnot extends MenuItem {
     private final int quantity;
 
     public GarlicKnot(int quantity) {
-        super("Garlic Knots");
+        super("Garlic Knot");
         this.quantity = quantity;
     }
 

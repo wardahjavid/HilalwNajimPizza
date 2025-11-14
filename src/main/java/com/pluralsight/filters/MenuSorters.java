@@ -13,14 +13,32 @@ public final class MenuSorters {
     }
 
     public static Comparator<MenuItem> byPriceDesc() {
-        return Comparator.comparingDouble(MenuItem::getPrice).reversed();
+        return Comparator.comparingDouble(MenuItem::getPrice)
+                .reversed();
     }
 
     public static Comparator<MenuItem> byCategory() {
-        return Comparator.comparing(MenuItem::getCategory, String.CASE_INSENSITIVE_ORDER);
+        return Comparator.comparing(
+                MenuItem::getCategory,
+                String.CASE_INSENSITIVE_ORDER
+        );
     }
 
     public static Comparator<MenuItem> byLabel() {
-        return Comparator.comparing(MenuItem::getLabel, String.CASE_INSENSITIVE_ORDER);
+        return Comparator.comparing(
+                MenuItem::getLabel,
+                String.CASE_INSENSITIVE_ORDER
+        );
+    }
+
+    public static Comparator<MenuItem> byPriceThenLabel() {
+        return Comparator.comparingDouble(MenuItem::getPrice)
+                .thenComparing(MenuItem::getLabel, String.CASE_INSENSITIVE_ORDER);
+    }
+
+    public static Comparator<MenuItem> fullySorted() {
+        return Comparator.comparing(MenuItem::getCategory, String.CASE_INSENSITIVE_ORDER)
+                .thenComparingDouble(MenuItem::getPrice)
+                .thenComparing(MenuItem::getLabel, String.CASE_INSENSITIVE_ORDER);
     }
 }

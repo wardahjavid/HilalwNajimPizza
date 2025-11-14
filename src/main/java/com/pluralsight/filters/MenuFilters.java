@@ -14,19 +14,26 @@ public final class MenuFilters {
 
     private MenuFilters() {}
 
+    /** Matches ALL items */
     public static Predicate<MenuItem> any() {
         return it -> true;
     }
 
     public static Predicate<MenuItem> category(String category) {
+        if (category == null || category.isBlank())
+            return any();
+
         String needle = category.toLowerCase();
-        return it -> it.getCategory().toLowerCase().contains(needle);
+        return it -> it.getCategory() != null &&
+                it.getCategory().toLowerCase().contains(needle);
     }
 
     public static Predicate<MenuItem> priceBetween(double min, double max) {
-        return it -> it.getPrice() >= min && it.getPrice() <= max;
+        return it -> {
+            double p = it.getPrice();
+            return p >= min && p <= max;
+        };
     }
-
 
     public static Predicate<MenuItem> pizzaSize(PizzaSize size) {
         return it -> (it instanceof Pizza p) && p.getSize() == size;
@@ -37,7 +44,11 @@ public final class MenuFilters {
     }
 
     public static Predicate<MenuItem> hasToppingNamed(String part) {
+        if (part == null || part.isBlank())
+            return any();
+
         String word = part.toLowerCase();
+
         return it -> (it instanceof Pizza p)
                 && p.getToppings().stream()
                 .anyMatch(t -> t.getName().toLowerCase().contains(word));
@@ -48,12 +59,17 @@ public final class MenuFilters {
     }
 
     public static Predicate<MenuItem> flavorContains(String part) {
-        String word = part.toLowerCase();
+        if (part == null || part.isBlank())
+            return any();
+
+        String needle = part.toLowerCase();
+
         return it -> (it instanceof Drink d)
-                && d.getFlavor().toLowerCase().contains(word);
+                && d.getFlavor().toLowerCase().contains(needle);
     }
 
     public static Predicate<MenuItem> minKnots(int minQty) {
-        return it -> (it instanceof GarlicKnot g) && g.getQuantity() >= minQty;
+        return it -> (it instanceof GarlicKnot g)
+                && g.getQuantity() >= minQty;
     }
 }
