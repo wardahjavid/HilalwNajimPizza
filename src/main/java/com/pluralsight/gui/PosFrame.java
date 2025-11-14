@@ -424,6 +424,6 @@ public class PosFrame extends JFrame {
         sb.append("\nTotal: $")
                 .append(String.format("%.2f", currentOrder.calculateTotal()));
 
-        summaryArea.setText(sb.toString());,
+        summaryArea.setText(sb.toString());
     }
 }
