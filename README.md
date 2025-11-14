@@ -46,7 +46,8 @@ JUnit 5:Unit testing
 - Add coupon codes and discounts system
 - Add a full REST API for a web dashboard
 
-## **Demo**
+## **Demo (Includes UML Class Diagram)**
+https://lucid.app/lucidchart/8486b889-04d9-45e2-9a75-5450fbea90bf/edit?beaconFlowId=0EBA576224CDF9C7&invitationId=inv_22458153-5d21-439b-8100-707c1cf0aec8&page=0_0#
 <img width="250" height="347" alt="image" src="https://github.com/user-attachments/assets/4cca458e-f859-47d8-9fca-27849cff8358" /> <img width="736" height="361" alt="image" src="https://github.com/user-attachments/assets/935c55a3-a4a9-4535-b73f-f46d35e450ea" />
 <img width="680" height="374" alt="image" src="https://github.com/user-attachments/assets/c1017e1e-4de1-4c4f-86bd-a09e9a94501e" /> <img width="625" height="377" alt="image" src="https://github.com/user-attachments/assets/dec360a7-d802-45fc-9ce5-07cecb6a0605" />
 <img width="476" height="365" alt="image" src="https://github.com/user-attachments/assets/0f31b033-ec28-421d-a968-d425374dbf4f" /> <img width="630" height="332" alt="image" src="https://github.com/user-attachments/assets/71fb3d74-818a-4727-a704-48a57fd1fb7e" /> 
